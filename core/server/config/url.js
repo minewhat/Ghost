@@ -139,13 +139,14 @@ function urlPathForPost(post, permalinks) {
 function urlFor(context, data, absolute) {
     var urlPath = '/',
         secure, imagePathRe,
-        knownObjects = ['post', 'tag', 'author', 'image', 'nav'], baseUrl,
+        knownObjects = ['post', 'tag', 'collection', 'author', 'image', 'nav'], baseUrl,
         hostname,
 
     // this will become really big
     knownPaths = {
         home: '/',
         rss: '/rss/',
+        rsspost: '/rsspost/',
         api: '/ghost/api/v0.1',
         sitemap_xsl: '/sitemap.xsl'
     };
@@ -221,3 +222,4 @@ module.exports.setConfig = setConfig;
 module.exports.urlJoin = urlJoin;
 module.exports.urlFor = urlFor;
 module.exports.urlPathForPost = urlPathForPost;
+module.exports.getBaseUrl = getBaseUrl;

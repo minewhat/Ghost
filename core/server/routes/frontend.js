@@ -13,6 +13,7 @@ frontendRoutes = function frontendRoutes(middleware) {
         tagRouter = express.Router({mergeParams: true}),
         authorRouter = express.Router({mergeParams: true}),
         rssRouter = express.Router({mergeParams: true}),
+        rssPostRouter = express.Router({mergeParams: true}),
         privateRouter = express.Router();
 
     // ### Admin routes
@@ -54,14 +55,19 @@ frontendRoutes = function frontendRoutes(middleware) {
         res.redirect(301, subdir + '/rss/');
     });
 
+    rssPostRouter.route('/rsspost/').get(frontend.rsspost);
+    rssPostRouter.route('/rsspost/:page/').get(frontend.rsspost);
+
     // Index
     indexRouter.route('/').get(frontend.homepage);
     indexRouter.route('/' + routeKeywords.page + '/:page/').get(frontend.homepage);
+    indexRouter.route('/rsspost/').get(frontend.rsspost);
     indexRouter.use(rssRouter);
 
     // Tags
     tagRouter.route('/').get(frontend.tag);
     tagRouter.route('/' + routeKeywords.page + '/:page/').get(frontend.tag);
+    tagRouter.route('/rsspost/').get(frontend.rsspost);
     tagRouter.use(rssRouter);
 
     // Authors
@@ -70,6 +76,7 @@ frontendRoutes = function frontendRoutes(middleware) {
         res.redirect(subdir + '/ghost/team/' + req.params.slug + '/');
     });
     authorRouter.route('/' + routeKeywords.page + '/:page/').get(frontend.author);
+    authorRouter.route('/rsspost/').get(frontend.rsspost);
     authorRouter.use(rssRouter);
 
     // Mount the Routers

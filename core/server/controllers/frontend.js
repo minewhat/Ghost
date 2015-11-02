@@ -7,6 +7,7 @@
 var _           = require('lodash'),
     api         = require('../api'),
     rss         = require('../data/xml/rss'),
+    rsspost     = require('../data/xml/rsspost'),
     path        = require('path'),
     config      = require('../config'),
     errors      = require('../errors'),
@@ -90,6 +91,8 @@ function setResponseContext(req, res, data) {
         contexts.push('index');
     } else if (/^\/rss\//.test(res.locals.relativeUrl)) {
         contexts.push('rss');
+    } else if (/^\/rsspost\//.test(res.locals.relativeUrl)) {
+        contexts.push('rsspost');
     } else if (privatePattern.test(res.locals.relativeUrl)) {
         contexts.push('private');
     } else if (tagPattern.test(res.locals.relativeUrl)) {
@@ -362,6 +365,7 @@ frontendControllers = {
             }
         }).catch(handleError(next));
     },
+    rsspost: rsspost,
     rss: rss,
     private: function private(req, res) {
         var defaultPage = path.resolve(config.paths.adminViews, 'private.hbs');
