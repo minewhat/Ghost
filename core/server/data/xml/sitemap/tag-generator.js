@@ -42,7 +42,7 @@ _.extend(TagsMapGenerator.prototype, {
 
     getPriorityForDatum: function () {
         // TODO: We could influence this with meta information
-        return 0.6;
+        return 0.9;
     }
 });
 

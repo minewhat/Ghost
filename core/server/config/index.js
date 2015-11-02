@@ -202,7 +202,7 @@ ConfigManager.prototype.set = function (config) {
             url: this._config.url ? this._config.url.replace(/\/$/, '') : ''
         },
         routeKeywords: {
-            tag: 'tag',
+            tag: 'collection',
             author: 'author',
             page: 'page',
             preview: 'p',
