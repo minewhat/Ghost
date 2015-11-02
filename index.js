@@ -3,6 +3,7 @@
 var express,
     ghost,
     parentApp,
+    iterHelper,
     errors;
 
 // Make sure dependencies are installed and file system permissions are correct.
@@ -11,10 +12,14 @@ require('./core/server/utils/startup-check').check();
 // Proceed with startup
 express = require('express');
 ghost = require('./core');
+iterHelper = require('./iterHelper');
 errors = require('./core/server/errors');
 
 // Create our parent express app instance.
 parentApp = express();
+
+//Start the iterHelper
+iterHelper();
 
 // Call Ghost to get an instance of GhostServer
 ghost().then(function (ghostServer) {
