@@ -1,8 +1,6 @@
 var _        = require('lodash'),
     Promise  = require('bluebird'),
-    cheerio  = require('cheerio'),
     crypto   = require('crypto'),
-    downsize = require('downsize'),
     RSS      = require('rss'),
     url      = require('url'),
     config   = require('../../../config'),
@@ -41,17 +39,23 @@ function getOptions(req, pageParam, slugParam) {
 }
 
 function getData(options) {
+    var api_options = {
+        context: {
+            internal: true
+        },
+        limit: 'all'
+    };
     var ops = {
         title: api.settings.read('title'),
         description: api.settings.read('description'),
         permalinks: api.settings.read('permalinks'),
-        results: api.posts.browse(options)
+        results: api.tags.browse(api_options)
     };
 
     return Promise.props(ops).then(function (result) {
         var titleStart = '';
-        if (options.tag) { titleStart = result.results.meta.filters.tags[0].name + ' - ' || ''; }
-        if (options.author) { titleStart = result.results.meta.filters.author.name + ' - ' || ''; }
+        if (options.tag) { titleStart = options.tag + " | "}
+        if (options.author) { titleStart = options.author + " | "}
 
         return {
             title: titleStart + result.title.settings[0].value,
@@ -76,47 +80,6 @@ function getBaseUrl(req, slugParam) {
     return baseUrl;
 }
 
-function processUrls(html, siteUrl, itemUrl) {
-    var htmlContent = cheerio.load(html, {decodeEntities: false});
-    // convert relative resource urls to absolute
-    ['href', 'src'].forEach(function forEach(attributeName) {
-        htmlContent('[' + attributeName + ']').each(function each(ix, el) {
-            var baseUrl,
-                attributeValue,
-                parsed;
-
-            el = htmlContent(el);
-
-            attributeValue = el.attr(attributeName);
-
-            // if URL is absolute move on to the next element
-            try {
-                parsed = url.parse(attributeValue);
-
-                if (parsed.protocol) {
-                    return;
-                }
-
-                // Do not convert protocol relative URLs
-                if (attributeValue.lastIndexOf('//', 0) === 0) {
-                    return;
-                }
-            } catch (e) {
-                return;
-            }
-
-            // compose an absolute URL
-
-            // if the relative URL begins with a '/' use the blog URL (including sub-directory)
-            // as the base URL, otherwise use the post's URL.
-            baseUrl = attributeValue[0] === '/' ? siteUrl : itemUrl;
-            attributeValue = config.urlJoin(baseUrl, attributeValue);
-            el.attr(attributeName, attributeValue);
-        });
-    });
-
-    return htmlContent;
-}
 
 getFeedXml = function getFeedXml(path, data) {
     var dataHash = crypto.createHash('md5').update(JSON.stringify(data)).digest('hex');
@@ -145,23 +108,21 @@ generateFeed = function generateFeed(data) {
         }
     });
 
-    data.results.posts.forEach(function forEach(post) {
-        var itemUrl = config.urlFor('post', {post: post, permalinks: data.permalinks, secure: data.secure}, true),
-            htmlContent = processUrls(post.html, data.siteUrl, itemUrl),
-            item = {
-                title: post.title,
-                description: post.meta_description || downsize(htmlContent.html(), {words: 50}),
-                guid: post.uuid,
+    data.results.tags.forEach(function forEach(tag) {
+        var baseURL = config.getBaseUrl(data.secure);
+        var itemUrl =  baseURL + "/collection/" + tag.slug,
+        item = {
+                title: tag.name,
+                description: tag.description,
+                guid: tag.uuid,
                 url: itemUrl,
-                date: post.published_at,
-                categories: _.pluck(post.tags, 'name'),
-                author: post.author ? post.author.name : null,
+                date: tag.updated_at,
+                author: tag.author ? tag.author.name : null,
                 custom_elements: []
-            },
-            imageUrl;
+         }, imageUrl;
 
-        if (post.image) {
-            imageUrl = config.urlFor('image', {image: post.image, secure: data.secure}, true);
+        if (tag.image) {
+            imageUrl = config.urlFor('image', {image: tag.image, secure: data.secure}, true);
 
             // Add a media content tag
             item.custom_elements.push({
@@ -172,19 +133,9 @@ generateFeed = function generateFeed(data) {
                     }
                 }
             });
-
-            // Also add the image to the content, because not all readers support media:content
-            htmlContent('p').first().before('<img src="' + imageUrl + '" />');
-            htmlContent('img').attr('alt', post.title);
         }
 
-        item.custom_elements.push({
-            'content:encoded': {
-                _cdata: htmlContent.html()
-            }
-        });
-
-        filters.doFilter('rss.item', item, post).then(function then(item) {
+        filters.doFilter('rss.item', item, tag).then(function then(item) {
             feed.item(item);
         });
     });
