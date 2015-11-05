@@ -19,7 +19,7 @@ var TagSettingsValidator = BaseValidator.create({
     metaTitle: function (model) {
         var metaTitle = model.get('meta_title');
 
-        if (!validator.isLength(metaTitle, 0, 150)) {
+        if (!validator.isLength(metaTitle, 0, 350)) {
             model.get('errors').add('meta_title', 'Meta Title cannot be longer than 150 characters.');
             this.invalidate();
         }
@@ -27,7 +27,7 @@ var TagSettingsValidator = BaseValidator.create({
     metaDescription: function (model) {
         var metaDescription = model.get('meta_description');
 
-        if (!validator.isLength(metaDescription, 0, 200)) {
+        if (!validator.isLength(metaDescription, 0, 1000)) {
             model.get('errors').add('meta_description', 'Meta Description cannot be longer than 200 characters.');
             this.invalidate();
         }
