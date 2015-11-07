@@ -6,7 +6,7 @@ var _       = require('lodash'),
     RESOURCES,
     XMLNS_DECLS;
 
-RESOURCES = ['tags', 'authors', 'pages'];
+RESOURCES = ['tags', 'pages'];
 
 XMLNS_DECLS = {
     _attr: {
