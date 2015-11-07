@@ -68,3 +68,6 @@ config.js
 
 # Coverage reports
 coverage.html
+
+content
+server
