@@ -121,6 +121,12 @@ generateFeed = function generateFeed(data) {
                 custom_elements: []
          }, imageUrl;
 
+        // Add a featured tag
+        item.custom_elements.push({
+            'featured': post.featured
+        });
+
+
         if (tag.image) {
             imageUrl = config.urlFor('image', {image: tag.image, secure: data.secure}, true);
 
