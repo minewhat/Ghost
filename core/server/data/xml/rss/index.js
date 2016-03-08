@@ -121,10 +121,7 @@ generateFeed = function generateFeed(data) {
                 custom_elements: []
          }, imageUrl;
 
-        // Add a featured tag
-        item.custom_elements.push({
-            'featured': post.featured
-        });
+        
 
 
         if (tag.image) {
@@ -139,6 +136,12 @@ generateFeed = function generateFeed(data) {
                     }
                 }
             });
+
+            // Add a featured tag
+            item.custom_elements.push({
+                'featured': post.featured
+            });
+        
         }
 
         filters.doFilter('rss.item', item, tag).then(function then(item) {
