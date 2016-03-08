@@ -173,6 +173,11 @@ generateFeed = function generateFeed(data) {
                 }
             });
 
+            // Add a featured tag
+            item.custom_elements.push({
+                'featured': post.featured
+            });
+
             // Also add the image to the content, because not all readers support media:content
             htmlContent('p').first().before('<img src="' + imageUrl + '" />');
             htmlContent('img').attr('alt', post.title);
