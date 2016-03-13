@@ -1,6 +1,6 @@
 var hbs = require('express-hbs');
 var _ = require('underscore');
-//hbs custom function to check if the content of the item is empty
+//hbs custom function to check if the content of the item is empty 
  
 registerHelper = function (){
 
